@@ -14,7 +14,7 @@ static uint8_t TEMP_FLAG = 0;
 static uint8_t PRINT_FLAG = 0;
 
 void TIMER2Init(){
-/* interrupcion cada 0,5s*/
+/* interrupcion cada 0,25s*/
 	ASSR|= (1<<AS2) ;
 	TCCR2A =0x00;
 	TCCR2B |= (1<<CS21) | (1<<CS20);//preescalador 32 T = 0,25s
