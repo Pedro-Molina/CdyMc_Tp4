@@ -98,9 +98,9 @@
    </POPUP>
    <POPUP w="785" x="0" flags="0000002b" y="206" h="400" pid="1" iid="4">
     <PROPERTIES>
-     <ITEM name="Breakpoint 0">"ADCStart",00EA,000A,BE92,6772,1
+     <ITEM name="Breakpoint 0">"ADCStart",0100,000A,BE92,6772,1
 </ITEM>
-     <ITEM name="Breakpoint 1">"main",03A6,0028,3C0A,9C5C,1
+     <ITEM name="Breakpoint 1">"main",0492,0022,CE8A,9C5C,1
 </ITEM>
      <ITEM name="Breakpoint 2">"main",03F2,0074,DEA1,9C5C,1
 </ITEM>
@@ -113,7 +113,7 @@
      <ITEM name="nBreakpoints">2</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="624" x="1252" flags="0000000a" y="300" h="691" pid="2" iid="4">
+   <POPUP w="624" x="1266" flags="0000800b" y="272" h="691" pid="2" iid="4">
     <PROPERTIES>
      <ITEM name="Address Column Width">92</ITEM>
      <ITEM name="AutoResize">No</ITEM>

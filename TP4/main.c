@@ -12,6 +12,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <math.h>
 
 
 
@@ -22,6 +23,7 @@
 void checkTempTask();
 void printTempTask();
 
+static volatile uint16_t temperature;
 
 
 int main(void)
@@ -50,20 +52,24 @@ int main(void)
 }
 void printTempTask(){
 	//actualizo LCD
-	uint16_t temperature;
-	char formato[12] ;
-	temperature = round((ADCGetRead()*5000UL)/1024);//redondear para rriba?
-	snprintf(formato,sizeof(formato),"TEMP: %.2d C",temperature);
+	char formato[13] ;
+	temperature = (ADCGetRead()*0.488*10);//redondear para rriba?
+	uint8_t parteEntera = temperature/10;
+	uint8_t parteFraccionaria = temperature % 10;
+	snprintf(formato,sizeof(formato),"TEMP: %d,%d C",parteEntera,parteFraccionaria);
 	LCDclr();
 	LCDGotoXY(0,0);
-	LCDstring(formato,sizeof(formato));
+	if (parteEntera < 10){
+		LCDstring(formato,sizeof(formato)-2);
+		
+	}else LCDstring(formato,sizeof(formato)-1);
+	
 	TIMER2ResetPrintFlag();
 }
 
 void checkTempTask(){
 	//check temperatura y ejecuto actuadores
-	uint16_t temperature;
-	temperature = round((ADCGetRead()*50000UL)/1024);
+	temperature = round((ADCGetRead()*0.488));
 	if (temperature > 24){
 		PORTB |=(1<<PB0); 
 	}else if (temperature < 17)
@@ -75,6 +81,7 @@ void checkTempTask(){
 	}
 	TIMER2ResetTempFlag();
 }
+
 
 
 
