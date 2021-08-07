@@ -42,12 +42,14 @@ int main(void)
 	
     while (1) 
     {
-		if (TIMER2GetPrintFlag() == 2){
-			printTempTask();
-		}
-		if(TIMER2GetTempFlag() == 1){
-			checkTempTask();
-		}
+	if (TIMER2GetPrintFlag() == 2){ //flag que me define cuantas interrupciones hubo. 
+		printTempTask(); //verifico que se hayan dado dos interrupciones para actualizar el LCD cada 0.5 segundos.
+		TIMER2ResetPrintFlag(); //reseteo el flag
+	}
+	if(TIMER2GetTempFlag() == 1){  //flag que me define si debo de ejecutar la lógica de control de temperatura.
+		checkTempTask(); //ejecuto el control de la temperatura.
+		TIMER2ResetTempFlag(); //reseteo el flaj
+	}
     }
 }
 void printTempTask(){
@@ -64,7 +66,7 @@ void printTempTask(){
 		
 	}else LCDstring(formato,sizeof(formato)-1);
 	
-	TIMER2ResetPrintFlag();
+	
 }
 
 void checkTempTask(){
@@ -79,7 +81,7 @@ void checkTempTask(){
 	{
 		PORTB = 0x00;
 	}
-	TIMER2ResetTempFlag();
+	
 }
 
 
