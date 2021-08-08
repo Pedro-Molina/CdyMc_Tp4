@@ -33,8 +33,9 @@ void TIMER2ResetPrintFlag(){
 void TIMER2ResetTempFlag(){
 	TEMP_FLAG =0;
 }
-ISR (TIMER2_OVF_vect)
+ISR (TIMER2_OVF_vect)  //interrupción cada 0,25s
 {
-	TEMP_FLAG++;
+	//sin condición en este caso siempre sumamos 
+	TEMP_FLAG++;   
 	PRINT_FLAG++;
 }
