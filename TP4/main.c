@@ -5,7 +5,6 @@
  * Author : molin
  */ 
 
-#define _GNU_SOURCE
 
 #define F_CPU 8000000UL
 #include <avr/io.h>
@@ -43,12 +42,12 @@ int main(void)
     while (1) 
     {
 	if (TIMER2GetPrintFlag() == 2){ //flag que me define cuantas interrupciones hubo. 
-		printTempTask(); //verifico que se hayan dado dos interrupciones para actualizar el LCD cada 0.5 segundos.
-		TIMER2ResetPrintFlag(); //reseteo el flag
-	}
-	if(TIMER2GetTempFlag() == 1){  //flag que me define si debo de ejecutar la lógica de control de temperatura.
-		checkTempTask(); //ejecuto el control de la temperatura.
-		TIMER2ResetTempFlag(); //reseteo el flaj
+		printTempTask();			//verifico que se hayan dado dos interrupciones para actualizar el LCD cada 0.5 segundos.
+		TIMER2ResetPrintFlag();		//reseteo el flag
+	}	
+	if(TIMER2GetTempFlag() == 1){	//flag que me define si debo de ejecutar la lógica de control de temperatura.
+		checkTempTask();			//ejecuto el control de la temperatura.
+		TIMER2ResetTempFlag();		//reseteo el flag
 	}
     }
 }
