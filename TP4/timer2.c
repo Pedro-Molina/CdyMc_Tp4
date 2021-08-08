@@ -4,19 +4,17 @@
  * Created: 5/8/2021 11:02:03
  *  Author: molin
  */ 
-/**********************************************************
-*
-***********************************************************/
+
 #include "adc.h"
 
-static uint8_t TEMP_FLAG = 0;
-static uint8_t PRINT_FLAG = 0;
+static uint8_t TEMP_FLAG = 0; // flag para tarea de chequedo de temperatura
+static uint8_t PRINT_FLAG = 0;// flag para tarea impresion del LCD
 
 /**********************************************************
 * Propósito de la función: inicializa el Timer 2
 * modo asincronico
 * preescalador 32 
-* interrupcion por overflow activo
+* interrupcion por overflow activa
 ***********************************************************/
 void TIMER2Init(){
 /* interrupcion cada 0,25s*/
@@ -25,6 +23,7 @@ void TIMER2Init(){
 	TCCR2B |= (1<<CS21) | (1<<CS20);//preescalador 32 
 	TIMSK2 |=  (1<<TOIE2);			//activo interrupcino por overflow
 }
+
 uint8_t TIMER2GetPrintFlag(){
 	return PRINT_FLAG;
 }

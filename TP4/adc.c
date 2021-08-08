@@ -6,6 +6,8 @@
  */ 
 #include "adc.h"
 
+void ADCSetRead();// funcion privada
+
 static volatile uint16_t read = 0;// mantiene ultimo valor del registro ADC
 /**********************************************************
 * 

@@ -10,4 +10,4 @@
 void ADCInit();
 void ADCStart();
 uint16_t ADCGetRead();
-void ADCSetRead();
+

@@ -531,11 +531,11 @@ END GROUP
  .text.LCDinit  0x00000264       0xac lcd.o
                 0x00000264                LCDinit
  .text.printTempTask
-                0x00000310      0x10a main.o
+                0x00000310      0x10e main.o
                 0x00000310                printTempTask
  .text.checkTempTask
-                0x0000041a       0x62 main.o
-                0x0000041a                checkTempTask
+                0x0000041e       0x5e main.o
+                0x0000041e                checkTempTask
  .text.main     0x0000047c       0x4a main.o
                 0x0000047c                main
  .text.TIMER2Init
@@ -793,13 +793,13 @@ END GROUP
  .debug_abbrev  0x000008c8      0x112 main.o
  .debug_abbrev  0x000009da       0x8e timer2.o
 
-.debug_line     0x00000000      0xb03
+.debug_line     0x00000000      0xafd
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x133 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.3.300/gcc/dev/atmega328p/avr5/crtatmega328p.o
  .debug_line    0x00000133      0x110 adc.o
  .debug_line    0x00000243      0x5e2 lcd.o
- .debug_line    0x00000825      0x1af main.o
- .debug_line    0x000009d4      0x12f timer2.o
+ .debug_line    0x00000825      0x1a9 main.o
+ .debug_line    0x000009ce      0x12f timer2.o
 
 .debug_frame    0x00000000      0x384
  *(.debug_frame)

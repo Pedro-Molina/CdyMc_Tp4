@@ -19,15 +19,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_abbrev 00000a68  00000000  00000000  000026e4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000b03  00000000  00000000  0000314c  2**0
+  8 .debug_line   00000afd  00000000  00000000  0000314c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000384  00000000  00000000  00003c50  2**2
+  9 .debug_frame  00000384  00000000  00000000  00003c4c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000641  00000000  00000000  00003fd4  2**0
+ 10 .debug_str    00000641  00000000  00000000  00003fd0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000f56  00000000  00000000  00004615  2**0
+ 11 .debug_loc    00000f56  00000000  00000000  00004611  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000148  00000000  00000000  0000556b  2**0
+ 12 .debug_ranges 00000148  00000000  00000000  00005567  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -509,11 +509,11 @@ void LCDinit(void)//Initializes LCD
  30e:	08 95       	ret
 
 00000310 <printTempTask>:
-		checkTempTask();			//ejecuto el control de la temperatura.
-		TIMER2ResetTempFlag();		//reseteo el flag
-	}
-    }
 }
+
+/**********************************************************
+* Propósito de la función: Imprimir temperatura en el lcd
+***********************************************************/
 void printTempTask(){
  310:	0f 93       	push	r16
  312:	1f 93       	push	r17
@@ -527,9 +527,8 @@ void printTempTask(){
  322:	de bf       	out	0x3e, r29	; 62
  324:	0f be       	out	0x3f, r0	; 63
  326:	cd bf       	out	0x3d, r28	; 61
-	//actualizo LCD
 	char formato[13] ;
-	temperature = (ADCGetRead()*0.488*10);//redondear para rriba?
+	temperature =round (ADCGetRead()*0.488*10);  //obtengo la temperatura usando el geter de read pero primero multiplico por 10											
  328:	0e 94 81 00 	call	0x102	; 0x102 <ADCGetRead>
  32c:	bc 01       	movw	r22, r24
  32e:	80 e0       	ldi	r24, 0x00	; 0
@@ -545,158 +544,157 @@ void printTempTask(){
  346:	40 e2       	ldi	r20, 0x20	; 32
  348:	51 e4       	ldi	r21, 0x41	; 65
  34a:	0e 94 2c 03 	call	0x658	; 0x658 <__mulsf3>
- 34e:	0e 94 97 02 	call	0x52e	; 0x52e <__fixunssfsi>
- 352:	70 93 11 01 	sts	0x0111, r23	; 0x800111 <temperature+0x1>
- 356:	60 93 10 01 	sts	0x0110, r22	; 0x800110 <temperature>
-	uint8_t parteEntera = temperature/10;
- 35a:	20 91 10 01 	lds	r18, 0x0110	; 0x800110 <temperature>
- 35e:	30 91 11 01 	lds	r19, 0x0111	; 0x800111 <temperature+0x1>
- 362:	ad ec       	ldi	r26, 0xCD	; 205
- 364:	bc ec       	ldi	r27, 0xCC	; 204
- 366:	0e 94 0e 04 	call	0x81c	; 0x81c <__umulhisi3>
- 36a:	8c 01       	movw	r16, r24
- 36c:	16 95       	lsr	r17
- 36e:	07 95       	ror	r16
+ 34e:	0e 94 99 03 	call	0x732	; 0x732 <round>
+ 352:	0e 94 97 02 	call	0x52e	; 0x52e <__fixunssfsi>
+ 356:	70 93 11 01 	sts	0x0111, r23	; 0x800111 <temperature+0x1>
+ 35a:	60 93 10 01 	sts	0x0110, r22	; 0x800110 <temperature>
+											// ya que estoy usando numeros enteros y queremos tener un decimal de precisión.
+	uint8_t parteEntera = temperature/10;	// separo en parte entera y parte decimal para la impresion
+ 35e:	20 91 10 01 	lds	r18, 0x0110	; 0x800110 <temperature>
+ 362:	30 91 11 01 	lds	r19, 0x0111	; 0x800111 <temperature+0x1>
+ 366:	ad ec       	ldi	r26, 0xCD	; 205
+ 368:	bc ec       	ldi	r27, 0xCC	; 204
+ 36a:	0e 94 0e 04 	call	0x81c	; 0x81c <__umulhisi3>
+ 36e:	8c 01       	movw	r16, r24
  370:	16 95       	lsr	r17
  372:	07 95       	ror	r16
  374:	16 95       	lsr	r17
  376:	07 95       	ror	r16
+ 378:	16 95       	lsr	r17
+ 37a:	07 95       	ror	r16
 	uint8_t parteFraccionaria = temperature % 10;
- 378:	40 91 10 01 	lds	r20, 0x0110	; 0x800110 <temperature>
- 37c:	50 91 11 01 	lds	r21, 0x0111	; 0x800111 <temperature+0x1>
+ 37c:	40 91 10 01 	lds	r20, 0x0110	; 0x800110 <temperature>
+ 380:	50 91 11 01 	lds	r21, 0x0111	; 0x800111 <temperature+0x1>
 	snprintf(formato,sizeof(formato),"TEMP: %d,%d C",parteEntera,parteFraccionaria);
- 380:	9a 01       	movw	r18, r20
- 382:	0e 94 0e 04 	call	0x81c	; 0x81c <__umulhisi3>
- 386:	96 95       	lsr	r25
- 388:	87 95       	ror	r24
+ 384:	9a 01       	movw	r18, r20
+ 386:	0e 94 0e 04 	call	0x81c	; 0x81c <__umulhisi3>
  38a:	96 95       	lsr	r25
  38c:	87 95       	ror	r24
  38e:	96 95       	lsr	r25
  390:	87 95       	ror	r24
- 392:	9c 01       	movw	r18, r24
- 394:	22 0f       	add	r18, r18
- 396:	33 1f       	adc	r19, r19
- 398:	88 0f       	add	r24, r24
- 39a:	99 1f       	adc	r25, r25
+ 392:	96 95       	lsr	r25
+ 394:	87 95       	ror	r24
+ 396:	9c 01       	movw	r18, r24
+ 398:	22 0f       	add	r18, r18
+ 39a:	33 1f       	adc	r19, r19
  39c:	88 0f       	add	r24, r24
  39e:	99 1f       	adc	r25, r25
  3a0:	88 0f       	add	r24, r24
  3a2:	99 1f       	adc	r25, r25
- 3a4:	82 0f       	add	r24, r18
- 3a6:	93 1f       	adc	r25, r19
- 3a8:	48 1b       	sub	r20, r24
- 3aa:	59 0b       	sbc	r21, r25
- 3ac:	55 27       	eor	r21, r21
- 3ae:	5f 93       	push	r21
- 3b0:	4f 93       	push	r20
- 3b2:	c8 01       	movw	r24, r16
- 3b4:	99 27       	eor	r25, r25
- 3b6:	9f 93       	push	r25
- 3b8:	8f 93       	push	r24
- 3ba:	80 e0       	ldi	r24, 0x00	; 0
- 3bc:	91 e0       	ldi	r25, 0x01	; 1
- 3be:	9f 93       	push	r25
- 3c0:	8f 93       	push	r24
- 3c2:	1f 92       	push	r1
- 3c4:	8d e0       	ldi	r24, 0x0D	; 13
- 3c6:	8f 93       	push	r24
- 3c8:	ce 01       	movw	r24, r28
- 3ca:	01 96       	adiw	r24, 0x01	; 1
- 3cc:	9f 93       	push	r25
- 3ce:	8f 93       	push	r24
- 3d0:	0e 94 1d 04 	call	0x83a	; 0x83a <snprintf>
+ 3a4:	88 0f       	add	r24, r24
+ 3a6:	99 1f       	adc	r25, r25
+ 3a8:	82 0f       	add	r24, r18
+ 3aa:	93 1f       	adc	r25, r19
+ 3ac:	48 1b       	sub	r20, r24
+ 3ae:	59 0b       	sbc	r21, r25
+ 3b0:	55 27       	eor	r21, r21
+ 3b2:	5f 93       	push	r21
+ 3b4:	4f 93       	push	r20
+ 3b6:	c8 01       	movw	r24, r16
+ 3b8:	99 27       	eor	r25, r25
+ 3ba:	9f 93       	push	r25
+ 3bc:	8f 93       	push	r24
+ 3be:	80 e0       	ldi	r24, 0x00	; 0
+ 3c0:	91 e0       	ldi	r25, 0x01	; 1
+ 3c2:	9f 93       	push	r25
+ 3c4:	8f 93       	push	r24
+ 3c6:	1f 92       	push	r1
+ 3c8:	8d e0       	ldi	r24, 0x0D	; 13
+ 3ca:	8f 93       	push	r24
+ 3cc:	ce 01       	movw	r24, r28
+ 3ce:	01 96       	adiw	r24, 0x01	; 1
+ 3d0:	9f 93       	push	r25
+ 3d2:	8f 93       	push	r24
+ 3d4:	0e 94 1d 04 	call	0x83a	; 0x83a <snprintf>
 	LCDclr();
- 3d4:	0e 94 e2 00 	call	0x1c4	; 0x1c4 <LCDclr>
+ 3d8:	0e 94 e2 00 	call	0x1c4	; 0x1c4 <LCDclr>
 	LCDGotoXY(0,0);
- 3d8:	60 e0       	ldi	r22, 0x00	; 0
- 3da:	80 e0       	ldi	r24, 0x00	; 0
- 3dc:	0e 94 01 01 	call	0x202	; 0x202 <LCDGotoXY>
-	if (parteEntera < 10){
- 3e0:	0f b6       	in	r0, 0x3f	; 63
- 3e2:	f8 94       	cli
- 3e4:	de bf       	out	0x3e, r29	; 62
- 3e6:	0f be       	out	0x3f, r0	; 63
- 3e8:	cd bf       	out	0x3d, r28	; 61
- 3ea:	0a 30       	cpi	r16, 0x0A	; 10
- 3ec:	30 f4       	brcc	.+12     	; 0x3fa <printTempTask+0xea>
+ 3dc:	60 e0       	ldi	r22, 0x00	; 0
+ 3de:	80 e0       	ldi	r24, 0x00	; 0
+ 3e0:	0e 94 01 01 	call	0x202	; 0x202 <LCDGotoXY>
+	if (parteEntera < 10){						//solo se impirme un digito de parte entera
+ 3e4:	0f b6       	in	r0, 0x3f	; 63
+ 3e6:	f8 94       	cli
+ 3e8:	de bf       	out	0x3e, r29	; 62
+ 3ea:	0f be       	out	0x3f, r0	; 63
+ 3ec:	cd bf       	out	0x3d, r28	; 61
+ 3ee:	0a 30       	cpi	r16, 0x0A	; 10
+ 3f0:	30 f4       	brcc	.+12     	; 0x3fe <printTempTask+0xee>
 		LCDstring(formato,sizeof(formato)-2);
- 3ee:	6b e0       	ldi	r22, 0x0B	; 11
- 3f0:	ce 01       	movw	r24, r28
- 3f2:	01 96       	adiw	r24, 0x01	; 1
- 3f4:	0e 94 e6 00 	call	0x1cc	; 0x1cc <LCDstring>
- 3f8:	05 c0       	rjmp	.+10     	; 0x404 <__LOCK_REGION_LENGTH__+0x4>
+ 3f2:	6b e0       	ldi	r22, 0x0B	; 11
+ 3f4:	ce 01       	movw	r24, r28
+ 3f6:	01 96       	adiw	r24, 0x01	; 1
+ 3f8:	0e 94 e6 00 	call	0x1cc	; 0x1cc <LCDstring>
+ 3fc:	05 c0       	rjmp	.+10     	; 0x408 <__LOCK_REGION_LENGTH__+0x8>
 		
-	}else LCDstring(formato,sizeof(formato)-1);
- 3fa:	6c e0       	ldi	r22, 0x0C	; 12
- 3fc:	ce 01       	movw	r24, r28
- 3fe:	01 96       	adiw	r24, 0x01	; 1
- 400:	0e 94 e6 00 	call	0x1cc	; 0x1cc <LCDstring>
-	
-	
+	}else LCDstring(formato,sizeof(formato)-1);//se imprimen 2 digitos de parte entera
+ 3fe:	6c e0       	ldi	r22, 0x0C	; 12
+ 400:	ce 01       	movw	r24, r28
+ 402:	01 96       	adiw	r24, 0x01	; 1
+ 404:	0e 94 e6 00 	call	0x1cc	; 0x1cc <LCDstring>
+		
 }
- 404:	2d 96       	adiw	r28, 0x0d	; 13
- 406:	0f b6       	in	r0, 0x3f	; 63
- 408:	f8 94       	cli
- 40a:	de bf       	out	0x3e, r29	; 62
- 40c:	0f be       	out	0x3f, r0	; 63
- 40e:	cd bf       	out	0x3d, r28	; 61
- 410:	df 91       	pop	r29
- 412:	cf 91       	pop	r28
- 414:	1f 91       	pop	r17
- 416:	0f 91       	pop	r16
- 418:	08 95       	ret
+ 408:	2d 96       	adiw	r28, 0x0d	; 13
+ 40a:	0f b6       	in	r0, 0x3f	; 63
+ 40c:	f8 94       	cli
+ 40e:	de bf       	out	0x3e, r29	; 62
+ 410:	0f be       	out	0x3f, r0	; 63
+ 412:	cd bf       	out	0x3d, r28	; 61
+ 414:	df 91       	pop	r29
+ 416:	cf 91       	pop	r28
+ 418:	1f 91       	pop	r17
+ 41a:	0f 91       	pop	r16
+ 41c:	08 95       	ret
 
-0000041a <checkTempTask>:
-
-
+0000041e <checkTempTask>:
+/**********************************************************
+* Propósito de la función: chequear la temperatura y activar la
+* estufa o ventilador
+***********************************************************/
 void checkTempTask(){
-	//check temperatura y ejecuto actuadores
-	temperature = round((ADCGetRead()*0.488*10));
- 41a:	0e 94 81 00 	call	0x102	; 0x102 <ADCGetRead>
- 41e:	bc 01       	movw	r22, r24
- 420:	80 e0       	ldi	r24, 0x00	; 0
- 422:	90 e0       	ldi	r25, 0x00	; 0
- 424:	0e 94 c6 02 	call	0x58c	; 0x58c <__floatunsisf>
- 428:	23 e2       	ldi	r18, 0x23	; 35
- 42a:	3b ed       	ldi	r19, 0xDB	; 219
- 42c:	49 ef       	ldi	r20, 0xF9	; 249
- 42e:	5e e3       	ldi	r21, 0x3E	; 62
- 430:	0e 94 2c 03 	call	0x658	; 0x658 <__mulsf3>
- 434:	20 e0       	ldi	r18, 0x00	; 0
- 436:	30 e0       	ldi	r19, 0x00	; 0
- 438:	40 e2       	ldi	r20, 0x20	; 32
- 43a:	51 e4       	ldi	r21, 0x41	; 65
- 43c:	0e 94 2c 03 	call	0x658	; 0x658 <__mulsf3>
- 440:	0e 94 99 03 	call	0x732	; 0x732 <round>
- 444:	0e 94 97 02 	call	0x52e	; 0x52e <__fixunssfsi>
- 448:	70 93 11 01 	sts	0x0111, r23	; 0x800111 <temperature+0x1>
- 44c:	60 93 10 01 	sts	0x0110, r22	; 0x800110 <temperature>
+	temperature = round(ADCGetRead()*0.488*10);//redondeo al entero mas cercano
+ 41e:	0e 94 81 00 	call	0x102	; 0x102 <ADCGetRead>
+ 422:	bc 01       	movw	r22, r24
+ 424:	80 e0       	ldi	r24, 0x00	; 0
+ 426:	90 e0       	ldi	r25, 0x00	; 0
+ 428:	0e 94 c6 02 	call	0x58c	; 0x58c <__floatunsisf>
+ 42c:	23 e2       	ldi	r18, 0x23	; 35
+ 42e:	3b ed       	ldi	r19, 0xDB	; 219
+ 430:	49 ef       	ldi	r20, 0xF9	; 249
+ 432:	5e e3       	ldi	r21, 0x3E	; 62
+ 434:	0e 94 2c 03 	call	0x658	; 0x658 <__mulsf3>
+ 438:	20 e0       	ldi	r18, 0x00	; 0
+ 43a:	30 e0       	ldi	r19, 0x00	; 0
+ 43c:	40 e2       	ldi	r20, 0x20	; 32
+ 43e:	51 e4       	ldi	r21, 0x41	; 65
+ 440:	0e 94 2c 03 	call	0x658	; 0x658 <__mulsf3>
+ 444:	0e 94 99 03 	call	0x732	; 0x732 <round>
+ 448:	0e 94 97 02 	call	0x52e	; 0x52e <__fixunssfsi>
+ 44c:	70 93 11 01 	sts	0x0111, r23	; 0x800111 <temperature+0x1>
+ 450:	60 93 10 01 	sts	0x0110, r22	; 0x800110 <temperature>
 	if (temperature > 240){
- 450:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <temperature>
- 454:	90 91 11 01 	lds	r25, 0x0111	; 0x800111 <temperature+0x1>
- 458:	81 3f       	cpi	r24, 0xF1	; 241
- 45a:	91 05       	cpc	r25, r1
- 45c:	10 f0       	brcs	.+4      	; 0x462 <checkTempTask+0x48>
+ 454:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <temperature>
+ 458:	90 91 11 01 	lds	r25, 0x0111	; 0x800111 <temperature+0x1>
+ 45c:	81 3f       	cpi	r24, 0xF1	; 241
+ 45e:	91 05       	cpc	r25, r1
+ 460:	10 f0       	brcs	.+4      	; 0x466 <checkTempTask+0x48>
 		PORTB |=(1<<PB0);
- 45e:	28 9a       	sbi	0x05, 0	; 5
- 460:	0a c0       	rjmp	.+20     	; 0x476 <checkTempTask+0x5c>
+ 462:	28 9a       	sbi	0x05, 0	; 5
+ 464:	08 95       	ret
 	}else if (temperature < 170)
- 462:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <temperature>
- 466:	90 91 11 01 	lds	r25, 0x0111	; 0x800111 <temperature+0x1>
- 46a:	8a 3a       	cpi	r24, 0xAA	; 170
- 46c:	91 05       	cpc	r25, r1
- 46e:	10 f4       	brcc	.+4      	; 0x474 <checkTempTask+0x5a>
+ 466:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <temperature>
+ 46a:	90 91 11 01 	lds	r25, 0x0111	; 0x800111 <temperature+0x1>
+ 46e:	8a 3a       	cpi	r24, 0xAA	; 170
+ 470:	91 05       	cpc	r25, r1
+ 472:	10 f4       	brcc	.+4      	; 0x478 <checkTempTask+0x5a>
 	{
 		PORTB |=(1<<PB1);
- 470:	29 9a       	sbi	0x05, 1	; 5
- 472:	01 c0       	rjmp	.+2      	; 0x476 <checkTempTask+0x5c>
+ 474:	29 9a       	sbi	0x05, 1	; 5
+ 476:	08 95       	ret
 	}else
 	{
 		PORTB = 0x00;
- 474:	15 b8       	out	0x05, r1	; 5
-	}
-	TIMER2ResetTempFlag();
- 476:	0e 94 7e 02 	call	0x4fc	; 0x4fc <TIMER2ResetTempFlag>
+ 478:	15 b8       	out	0x05, r1	; 5
  47a:	08 95       	ret
 
 0000047c <main>:
@@ -732,28 +730,28 @@ int main(void)
 	
     while (1) 
     {
-	if (TIMER2GetPrintFlag() == 2){ //flag que me define cuantas interrupciones hubo. 
+		if (TIMER2GetPrintFlag() == 2){ //flag que me define cuantas interrupciones hubo. 
  4a4:	0e 94 75 02 	call	0x4ea	; 0x4ea <TIMER2GetPrintFlag>
  4a8:	82 30       	cpi	r24, 0x02	; 2
  4aa:	21 f4       	brne	.+8      	; 0x4b4 <main+0x38>
-		printTempTask();			//verifico que se hayan dado dos interrupciones para actualizar el LCD cada 0.5 segundos.
+			printTempTask();			//verifico que se hayan dado dos interrupciones para actualizar el LCD cada 0.5 segundos.
  4ac:	0e 94 88 01 	call	0x310	; 0x310 <printTempTask>
-		TIMER2ResetPrintFlag();		//reseteo el flag
+			TIMER2ResetPrintFlag();		//reseteo el flag
  4b0:	0e 94 7b 02 	call	0x4f6	; 0x4f6 <TIMER2ResetPrintFlag>
-	}	
-	if(TIMER2GetTempFlag() == 1){	//flag que me define si debo de ejecutar la lógica de control de temperatura.
+		}	
+		if(TIMER2GetTempFlag() == 1){	//flag que me define si debo de ejecutar la lógica de control de temperatura.
  4b4:	0e 94 78 02 	call	0x4f0	; 0x4f0 <TIMER2GetTempFlag>
  4b8:	81 30       	cpi	r24, 0x01	; 1
  4ba:	a1 f7       	brne	.-24     	; 0x4a4 <main+0x28>
-		checkTempTask();			//ejecuto el control de la temperatura.
- 4bc:	0e 94 0d 02 	call	0x41a	; 0x41a <checkTempTask>
-		TIMER2ResetTempFlag();		//reseteo el flag
+			checkTempTask();			//ejecuto el control de la temperatura.
+ 4bc:	0e 94 0f 02 	call	0x41e	; 0x41e <checkTempTask>
+			TIMER2ResetTempFlag();		//reseteo el flag
  4c0:	0e 94 7e 02 	call	0x4fc	; 0x4fc <TIMER2ResetTempFlag>
  4c4:	ef cf       	rjmp	.-34     	; 0x4a4 <main+0x28>
 
 000004c6 <TIMER2Init>:
 * preescalador 32 
-* interrupcion por overflow activo
+* interrupcion por overflow activa
 ***********************************************************/
 void TIMER2Init(){
 /* interrupcion cada 0,25s*/
@@ -781,6 +779,7 @@ void TIMER2Init(){
 
 000004ea <TIMER2GetPrintFlag>:
 }
+
 uint8_t TIMER2GetPrintFlag(){
 	return PRINT_FLAG;
 }
